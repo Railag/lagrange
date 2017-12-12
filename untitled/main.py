@@ -1,10 +1,24 @@
 # coding=utf-8
+from numpy import meshgrid
+from numpy.ma import arange
 from tkinter import *
+from mpl_toolkits.mplot3d import axes3d
+import matplotlib.pyplot as plt
+from matplotlib import cm
+import numpy as np
 
 from lagrange import Lagrange
 
-func = "f(x,y,z) = x^2 + y^2 + z^2"
+func_text = "f(x,y,z) = x^2 + y^2 + z^2"
 coefficients = "Ax + By + Cz + D = 0"
+
+
+def func(x, y, z):
+    return x * x + y * y + z * z
+
+
+def func2(x, y, z):
+    return A * x + B * y + C * z + D
 
 
 def sign(value):
@@ -21,9 +35,31 @@ def sign2(value):
         return ""
 
 
+def drawPlot():
+    X, Y = np.mgrid[-25:25:100j, -25:25:100j]
+    z = 0
+
+    ax = plt.axes(projection='3d')
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
+    # ax.contour(X, Y, func(X, Y, z), cmap=cm.gnuplot)
+    ax.contour3D(X, Y, func(X, Y, z), 50, cmap='binary')
+
+    # bx = plt.axes(projection='3d')
+    # bx.set_xlabel('x')
+    # bx.set_ylabel('y')
+    # bx.set_zlabel('z')
+    ax.contour3D(X, Y, func2(X, Y, z), 50, cmap='Greens')
+    # ax.scatter3D(X, Y, z, c=z, cmap='Greens')
+
+    plt.show()
+
+
 def calculate(self):
     textbox.insert('1.0', "Starting.. \n")
 
+    global A, B, C, D
     A = int(firstCoeff.get("1.0", END))
     B = int(secondCoeff.get("1.0", END))
     C = int(thirdCoeff.get("1.0", END))
@@ -53,16 +89,19 @@ def calculate(self):
 
     textbox.insert(END, str(rounded_results) + "\n")
 
+    textbox.insert(END, "Lambda = " + str(Lambda) + "\n")
+
     textbox.insert(END, "X = " + str(X) + "\n")
     textbox.insert(END, "Y = " + str(Y) + "\n")
     textbox.insert(END, "Z = " + str(Z) + "\n")
-    textbox.insert(END, "Lambda = " + str(Lambda) + "\n")
+
+    F = X * X + Y * Y + Z * Z
+    textbox.insert(END, "Значение исходной функции f = x^2 + y^2 + z^2 равно: " + str(F) + "\n")
+
+    drawPlot()
 
 
 root = Tk()
-
-width = 5
-height = 8
 
 panelFrame = Frame(root, height=60, bg='gray')
 imageFrame = Frame(root, height=80, width=50, bg='red')
@@ -77,7 +116,7 @@ textbox = Text(textFrame, font='Arial 14', wrap='word')
 
 imagebox = PhotoImage()
 
-labelFunction = Label(image2Frame, text=func)
+labelFunction = Label(image2Frame, text=func_text)
 labelFunction.pack()
 
 labelCoefficients = Label(image2Frame, text=coefficients)
@@ -87,19 +126,23 @@ canvas = Canvas(image2Frame, height=200)
 canvas.pack(side="bottom", fill="both", expand="yes")
 
 firstCoeff = Text(image2Frame, height=1, width=4, wrap='word')
-firstCoeff.insert("1.0", 'A')
+# firstCoeff.insert("1.0", 'A')
+firstCoeff.insert("1.0", 1)
 firstCoeff.pack()
 
 secondCoeff = Text(image2Frame, height=1, width=4, wrap='word')
-secondCoeff.insert("1.0", 'B')
+# secondCoeff.insert("1.0", 'B')
+secondCoeff.insert("1.0", 2)
 secondCoeff.pack()
 
 thirdCoeff = Text(image2Frame, height=1, width=4, wrap='word')
-thirdCoeff.insert("1.0", 'C')
+# thirdCoeff.insert("1.0", 'C')
+thirdCoeff.insert("1.0", 3)
 thirdCoeff.pack()
 
 fourthCoeff = Text(image2Frame, height=1, width=4, wrap='word')
-fourthCoeff.insert("1.0", 'D')
+# fourthCoeff.insert("1.0", 'D')
+fourthCoeff.insert("1.0", 4)
 fourthCoeff.pack()
 
 textbox.pack()
